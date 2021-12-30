@@ -21,4 +21,19 @@ const loginUser = async (req, res) => {
     )
 }
 
+const registerUser = async (req, res) => {
+    if (!req.body) {
+        return res.status(400).json({message: 'Missing data'});
+    } else if (!req.body.mail || !req.body.password || !req.body.userName || !req.body.userRole || !req.body.idNumber) {
+        return res.status(400).json({message: 'Missing data'});
+    }
+    let [err, resp] = await to(usersController.registerUser(req.body.userRole, req.body.userName, req.body.mail, req.body.password, req.body.idNumber));
+    if (err || !resp) {
+        return res.status(400).json({message: err});
+    }
+    res.status(200).send();
+}
+
+
 exports.loginUser = loginUser;
+exports.registerUser = registerUser;

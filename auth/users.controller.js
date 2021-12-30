@@ -26,7 +26,7 @@ const registerUser = (userRole, userName, mail, password, idNumber) => {
             idNumber: idNumber
         });
         await newUser.save();
-        resolve();
+        resolve(newUser);
     });
 }
 

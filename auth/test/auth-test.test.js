@@ -38,4 +38,40 @@ describe('Suite de pruebas auth', () => {
                 done();
             });
     });
+
+    it('should return 200 for a succesful register', (done) => {
+        chai.request(app)
+            .post('/auth/register')
+            .set('content-type', 'application/json')
+            .send({userRole: 'admin', userName:'testName', mail: 'userTest@mail.com', password: '1234', idNumber: '02721083E'})
+            .end((err, res) => {
+                //Expect valid login
+                chai.assert.equal(res.statusCode, 200);
+                done();
+            });
+    });
+
+    it('should return 400 for a empty register', (done) => {
+        chai.request(app)
+            .post('/auth/register')
+            .set('content-type', 'application/json')
+            .send({})
+            .end((err, res) => {
+                //Expect valid login
+                chai.assert.equal(res.statusCode, 400);
+                done();
+            });
+    });
+
+    it('should return 400 for a empty register field', (done) => {
+        chai.request(app)
+            .post('/auth/register')
+            .set('content-type', 'application/json')
+            .send({userRole: 'admin', userName:'testName', password: '1234', idNumber: '02721083E'})
+            .end((err, res) => {
+                //Expect valid login
+                chai.assert.equal(res.statusCode, 400);
+                done();
+            });
+    });
 });
