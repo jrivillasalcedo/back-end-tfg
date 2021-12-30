@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const { to } = require('../tools/to');
 
 const UserModel = mongoose.model('UserModel', 
-    { userName: String, password: String, userId: String });
+    { userRole: String, userName: String, mail: String, password: String, userId: String , idNumber: String});
 
 const cleanUpUsers = () => {
     return new Promise(async (resolve, reject) => {
@@ -13,15 +13,17 @@ const cleanUpUsers = () => {
     })
 }
 
-const registerUser = (userName, password) => {
+const registerUser = (userRole, userName, mail, password, idNumber) => {
     return new Promise(async (resolve, reject) => {
         let hashedPwd = crypto.hashPasswordSync(password);
-        // Guardar en la base de datos nuestro usuario
         let userId = uuid.v4();
         let newUser = new UserModel({
             userId: userId,
+            userRole: userRole,
             userName: userName,
-            password: hashedPwd
+            mail: mail,
+            password: hashedPwd, 
+            idNumber: idNumber
         });
         await newUser.save();
         resolve();
@@ -38,9 +40,9 @@ const getUser = (userId) => {
     });
 }
 
-const getUserIdFromUserName = (userName) => {
+const getUserIdFromUserMail = (mail) => {
         return new Promise(async (resolve, reject) => {
-            let [err, result] = await to(UserModel.findOne({userName: userName}).exec());
+            let [err, result] = await to(UserModel.findOne({mail: mail}).exec());
             if (err) {
                 return reject(err);
             }
@@ -48,9 +50,9 @@ const getUserIdFromUserName = (userName) => {
         });
 }
 
-const checkUserCredentials = (userName, password) => {
+const checkUserCredentials = (mail, password) => {
     return new Promise(async (resolve, reject) => {
-        let [err, user] = await to(getUserIdFromUserName(userName));
+        let [err, user] = await to(getUserIdFromUserMail(mail));
         if (!err || user) {
             crypto.comparePassword(password, user.password, (err, result) => {
                 if (err) {
@@ -66,6 +68,6 @@ const checkUserCredentials = (userName, password) => {
 }
 exports.registerUser = registerUser;
 exports.checkUserCredentials = checkUserCredentials;
-exports.getUserIdFromUserName = getUserIdFromUserName;
+exports.getUserIdFromUserMail = getUserIdFromUserMail;
 exports.getUser = getUser;
 exports.cleanUpUsers = cleanUpUsers;

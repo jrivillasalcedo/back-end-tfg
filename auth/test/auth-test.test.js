@@ -7,8 +7,8 @@ const usersController = require('../users.controller');
 const app = require('../../app').app;
 
 beforeEach(async () => {
-    await usersController.registerUser('bettatech', '1234');
-    await usersController.registerUser('mastermind', '4321');
+    await usersController.registerUser('admin','bettatech','bettatech@mail.com', '1234', '67458365T');
+    await usersController.registerUser('teacher','mastermind','mastermind@mail.com', '4321', '67458365T');
 })
 
 afterEach(async () => {
@@ -31,7 +31,7 @@ describe('Suite de pruebas auth', () => {
         chai.request(app)
             .post('/auth/login')
             .set('content-type', 'application/json')
-            .send({user: 'bettatech', password: '1234'})
+            .send({mail: 'bettatech@mail.com', password: '1234'})
             .end((err, res) => {
                 //Expect valid login
                 chai.assert.equal(res.statusCode, 200);
