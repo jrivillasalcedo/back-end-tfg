@@ -1,6 +1,7 @@
 const usersController = require('./users.controller');
 const jwt = require('jsonwebtoken');
 const {to} = require('../tools/to');
+require('dotenv').config();
 
 const loginUser = async (req, res) => {
     if (!req.body) {
@@ -15,7 +16,7 @@ const loginUser = async (req, res) => {
         return res.status(401).json({message: 'Invalid credentials'});
     }
     let user = await usersController.getUserIdFromUserMail(req.body.mail);
-    const token = jwt.sign({userId: user.userId}, 'secretPassword');
+    const token = jwt.sign({userId: user.userId}, process.env.SECRET_KEY);
     res.status(200).json(
         {token: token}
     )
