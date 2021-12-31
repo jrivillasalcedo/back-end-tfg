@@ -7,4 +7,8 @@ router.route('/login')
 
 router.route('/register')
     .post(authHttpHandler.registerUser);
+
+router.route('/list')
+    .get(authHttpHandler.listUser);
+    
 exports.router = router;

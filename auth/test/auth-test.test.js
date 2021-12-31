@@ -74,4 +74,31 @@ describe('Suite de pruebas auth', () => {
                 done();
             });
     });
+
+    it('should return 200 and the user with the user id in token', (done) => {
+        chai.request(app)
+            .post('/auth/register')
+            .set('content-type', 'application/json')
+            .send({userRole: 'admin', userName:'testName', mail: 'userTest@mail.com', password: '1234', idNumber: '02721083E'})
+            .end((err, res) => {
+                chai.request(app)
+                    .post('/auth/login')
+                    .set('content-type', 'application/json')
+                    .send({mail: 'userTest@mail.com', password: '1234'})
+                    .end((err, res) => {
+                        let token = res.body.token;
+                        chai.request(app)
+                            .get('/auth/list')
+                            .set('Authorization', `JWT ${token}`)
+                            .end((err, res) => {
+                                chai.assert.equal(res.statusCode, 200);
+                                chai.assert.equal(res.body.user.userName, 'testName');
+                                chai.assert.equal(res.body.user.idNumber, '02721083E');
+                                chai.assert.equal(res.body.user.userRole, 'admin');
+                                chai.assert.equal(res.body.user.mail, 'userTest@mail.com');
+                                done();
+                            });
+                    });
+            });
+    });
 });

@@ -35,6 +35,17 @@ const registerUser = async (req, res) => {
     res.status(200).send();
 }
 
+const listUser = async (req, res) => {
+    let [err, user] = await to(usersController.getUser(req.user.userId));
+    if (err) {
+        return res.status(400).json({message: "User not found"});
+    }
+    res.status(200).json({user: user})
+}
+
+
+
 
 exports.loginUser = loginUser;
 exports.registerUser = registerUser;
+exports.listUser = listUser;
