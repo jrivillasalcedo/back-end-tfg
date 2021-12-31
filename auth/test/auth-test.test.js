@@ -119,9 +119,42 @@ describe('Suite de pruebas auth', () => {
                             .set('Authorization', `JWT ${token}`)
                             .end((err, res) => {
                                 chai.assert.equal(res.statusCode, 200);
-                                console.log(res.body);
                                 chai.assert.equal(res.body.message.ok, 1);
                                 done();
+                            });
+                    });
+            });
+    });
+
+    it('should return 200 and the user updated', (done) => {
+        let user = {userRole: 'student', userName:'testNameUpdated', mail: 'userTestUpdated@mail.com', password: '12345', idNumber: '02721083J'};
+        chai.request(app)
+            .post('/auth/register')
+            .set('content-type', 'application/json')
+            .send({userRole: 'admin', userName:'testName', mail: 'userTest@mail.com', password: '1234', idNumber: '02721083E'})
+            .end((err, res) => {
+                chai.request(app)
+                    .post('/auth/login')
+                    .set('content-type', 'application/json')
+                    .send({mail: 'userTest@mail.com', password: '1234'})
+                    .end((err, res) => {
+                        let token = res.body.token;
+                        chai.request(app)
+                            .put('/auth/update')
+                            .send({user: user})
+                            .set('Authorization', `JWT ${token}`)
+                            .end((err, res) => {
+                                chai.request(app)
+                                    .get('/auth/list')
+                                    .set('Authorization', `JWT ${token}`)
+                                    .end((err, res) => {
+                                        chai.assert.equal(res.statusCode, 200);
+                                        chai.assert.equal(res.body.user.userName, 'testNameUpdated');
+                                        chai.assert.equal(res.body.user.idNumber, '02721083J');
+                                        chai.assert.equal(res.body.user.userRole, 'student');
+                                        chai.assert.equal(res.body.user.mail, 'userTestUpdated@mail.com');
+                                        done();
+                                    });
                             });
                     });
             });

@@ -51,6 +51,14 @@ const deleteUser = async (req, res) => {
     res.status(200).json({message: response})
 }
 
+const updateUser = async (req, res) => {
+    let [err, response] = await to(usersController.updateUser(req.user.userId, req.body.user));
+    if (err) {
+        return res.status(400).json({message: "Error while update user"});
+    }
+    res.status(200).json({message: response})
+}
+
 
 
 
@@ -58,3 +66,4 @@ exports.loginUser = loginUser;
 exports.registerUser = registerUser;
 exports.listUser = listUser;
 exports.deleteUser = deleteUser;
+exports.updateUser = updateUser;

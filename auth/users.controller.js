@@ -75,6 +75,31 @@ const deleteUser = (userId) => {
         }
         resolve(res);
     })
+}
+
+const updateUser = (userId, user) => {
+    return new Promise(async (resolve, reject) => {
+        let hashedPwd = crypto.hashPasswordSync(user.password);
+        let [err, data] = await to(UserModel.updateOne(
+            {userId: userId}, 
+            {$set: {userRole: user.userRole, userName: user.userName, mail: user.mail, password: hashedPwd, idNumber: user.idNumber}},
+            {upsert: true}).exec());
+        if (err || !data) {
+            return reject(err);
+        }
+        resolve();
+    })
+    
+}
+
+const getUserRole = (userId) => {
+    return new Promise(async (resolve, reject) => {
+        let [err, result] = await to(UserModel.findOne({userId: userId}).exec());
+        if (err) {
+            return reject(err);
+        }
+        resolve(result.userRole);
+    });
     
 }
 exports.registerUser = registerUser;
@@ -83,3 +108,5 @@ exports.getUserIdFromUserMail = getUserIdFromUserMail;
 exports.getUser = getUser;
 exports.cleanUpUsers = cleanUpUsers;
 exports.deleteUser = deleteUser;
+exports.updateUser = updateUser;
+exports.getUserRole = getUserRole;
