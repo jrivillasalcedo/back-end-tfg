@@ -66,8 +66,20 @@ const checkUserCredentials = (mail, password) => {
         }
     });
 }
+
+const deleteUser = (userId) => {
+    return new Promise(async (resolve, reject) => {
+        let [err, res] = await to(UserModel.deleteOne({userId: userId}).exec());
+        if (err || !res.ok) {
+            return reject(err);
+        }
+        resolve(res);
+    })
+    
+}
 exports.registerUser = registerUser;
 exports.checkUserCredentials = checkUserCredentials;
 exports.getUserIdFromUserMail = getUserIdFromUserMail;
 exports.getUser = getUser;
 exports.cleanUpUsers = cleanUpUsers;
+exports.deleteUser = deleteUser;

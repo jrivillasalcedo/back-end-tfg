@@ -43,9 +43,18 @@ const listUser = async (req, res) => {
     res.status(200).json({user: user})
 }
 
+const deleteUser = async (req, res) => {
+    let [err, response] = await to(usersController.deleteUser(req.user.userId));
+    if (err) {
+        return res.status(400).json({message: "User not found"});
+    }
+    res.status(200).json({message: response})
+}
+
 
 
 
 exports.loginUser = loginUser;
 exports.registerUser = registerUser;
 exports.listUser = listUser;
+exports.deleteUser = deleteUser;

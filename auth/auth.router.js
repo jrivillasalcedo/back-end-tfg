@@ -10,5 +10,8 @@ router.route('/register')
 
 router.route('/list')
     .get(authHttpHandler.listUser);
-    
+
+router.route('/delete')
+    .delete(authHttpHandler.deleteUser);
+
 exports.router = router;
