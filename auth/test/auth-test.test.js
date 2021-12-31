@@ -159,4 +159,52 @@ describe('Suite de pruebas auth', () => {
                     });
             });
     });
+
+
+    it('should return 200 and all the users registered', (done) => {
+        chai.request(app)
+            .post('/auth/register')
+            .set('content-type', 'application/json')
+            .send({userRole: 'admin', userName:'testName', mail: 'userTest@mail.com', password: '1234', idNumber: '02721083E'})
+            .end((err, res) => {
+                chai.request(app)
+                    .post('/auth/login')
+                    .set('content-type', 'application/json')
+                    .send({mail: 'userTest@mail.com', password: '1234'})
+                    .end((err, res) => {
+                        let token = res.body.token;
+                        chai.request(app)
+                            .get('/auth/listAll')
+                            .set('Authorization', `JWT ${token}`)
+                            .end((err, res) => {
+                                chai.assert.equal(res.statusCode, 200);
+                                chai.assert.equal(res.body.users.length, 3);
+                                done();
+                            });
+                    });
+            });
+    });
+
+    it('should return 401 you do not have permissions', (done) => {
+        chai.request(app)
+            .post('/auth/register')
+            .set('content-type', 'application/json')
+            .send({userRole: 'student', userName:'testName', mail: 'userTest@mail.com', password: '1234', idNumber: '02721083E'})
+            .end((err, res) => {
+                chai.request(app)
+                    .post('/auth/login')
+                    .set('content-type', 'application/json')
+                    .send({mail: 'userTest@mail.com', password: '1234'})
+                    .end((err, res) => {
+                        let token = res.body.token;
+                        chai.request(app)
+                            .get('/auth/listAll')
+                            .set('Authorization', `JWT ${token}`)
+                            .end((err, res) => {
+                                chai.assert.equal(res.statusCode, 401);
+                                done();
+                            });
+                    });
+            });
+    });
 });

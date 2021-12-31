@@ -13,7 +13,11 @@ router.route('/list')
 
 router.route('/delete')
     .delete(authHttpHandler.deleteUser);
+
 router.route('/update')
     .put(authHttpHandler.updateUser);
+
+router.route('/listAll')
+    .get(authHttpHandler.listAllUser);
 
 exports.router = router;

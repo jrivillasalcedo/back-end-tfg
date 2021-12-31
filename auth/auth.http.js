@@ -43,6 +43,23 @@ const listUser = async (req, res) => {
     res.status(200).json({user: user})
 }
 
+const listAllUser = async (req, res) => {
+    let [error, role] = await to(usersController.getUserRole(req.user.userId));
+    if (error) {
+        return res.status(401).json({message: "You do not have permissions"});
+    }
+
+    if(role == process.env.ADMIN){
+        let [err, users] = await to(usersController.getAllUser());
+        if (err) {
+            return res.status(400).json({message: "No users found"});
+        }
+        return res.status(200).json({users: users})
+    }
+    return res.status(401).json({message: "You do not have permissions"});
+    
+}
+
 const deleteUser = async (req, res) => {
     let [err, response] = await to(usersController.deleteUser(req.user.userId));
     if (err) {
@@ -67,3 +84,4 @@ exports.registerUser = registerUser;
 exports.listUser = listUser;
 exports.deleteUser = deleteUser;
 exports.updateUser = updateUser;
+exports.listAllUser = listAllUser;
