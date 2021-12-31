@@ -3,6 +3,9 @@ const jwt = require('jsonwebtoken');
 const {to} = require('../tools/to');
 require('dotenv').config();
 
+
+
+
 const loginUser = async (req, res) => {
     if (!req.body) {
         return res.status(400).json({message: 'Missing data'});
@@ -22,6 +25,9 @@ const loginUser = async (req, res) => {
     )
 }
 
+
+
+
 const registerUser = async (req, res) => {
     if (!req.body) {
         return res.status(400).json({message: 'Missing data'});
@@ -35,6 +41,9 @@ const registerUser = async (req, res) => {
     res.status(200).send();
 }
 
+
+
+
 const listUser = async (req, res) => {
     let [err, user] = await to(usersController.getUser(req.user.userId));
     if (err) {
@@ -42,6 +51,9 @@ const listUser = async (req, res) => {
     }
     res.status(200).json({user: user})
 }
+
+
+
 
 const listAllUser = async (req, res) => {
     let [error, role] = await to(usersController.getUserRole(req.user.userId));
@@ -60,6 +72,9 @@ const listAllUser = async (req, res) => {
     
 }
 
+
+
+
 const deleteUser = async (req, res) => {
     let [err, response] = await to(usersController.deleteUser(req.user.userId));
     if (err) {
@@ -67,6 +82,9 @@ const deleteUser = async (req, res) => {
     }
     res.status(200).json({message: response})
 }
+
+
+
 
 const updateUser = async (req, res) => {
     let [err, response] = await to(usersController.updateUser(req.user.userId, req.body.user));
@@ -79,9 +97,37 @@ const updateUser = async (req, res) => {
 
 
 
+const listUserByRole = async (req, res) => {
+
+    let [error, role] = await to(usersController.getUserRole(req.user.userId));
+    let roleToList = req.params.role;
+
+    if(role == process.env.STUDENT){
+        return res.status(401).json({message: "You do not have permissions"});
+    }
+
+    if(role == process.env.TEACHER && roleToList != process.env.STUDENT){
+        return res.status(401).json({message: "You do not have permissions"});
+    }
+
+    let [err, users] = await to(usersController.getAllUserByRole(roleToList));
+        if (err) {
+            return res.status(400).json({message: "No users found"});
+        }
+    return res.status(200).json({users: users})
+    
+}
+
+
+
+
+
+
+
 exports.loginUser = loginUser;
 exports.registerUser = registerUser;
 exports.listUser = listUser;
 exports.deleteUser = deleteUser;
 exports.updateUser = updateUser;
 exports.listAllUser = listAllUser;
+exports.listUserByRole = listUserByRole

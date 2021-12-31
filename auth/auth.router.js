@@ -20,4 +20,7 @@ router.route('/update')
 router.route('/listAll')
     .get(authHttpHandler.listAllUser);
 
+router.route('/list/:role')
+    .get(authHttpHandler.listUserByRole);
+
 exports.router = router;

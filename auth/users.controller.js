@@ -103,7 +103,7 @@ const getUserRole = (userId) => {
     
 }
 
-const getAllUser = (userId) => {
+const getAllUser = () => {
     return new Promise(async (resolve, reject) => {
         let [err, result] = await to(UserModel.find({}).exec());
         if (err) {
@@ -112,6 +112,19 @@ const getAllUser = (userId) => {
         resolve(result);
     });
 }
+
+const getAllUserByRole = (userRole) => {
+    return new Promise(async (resolve, reject) => {
+        let [err, result] = await to(UserModel.find({userRole: userRole}).exec());
+        if (err) {
+            return reject(err);
+        }
+        resolve(result);
+    });
+}
+
+
+
 exports.registerUser = registerUser;
 exports.checkUserCredentials = checkUserCredentials;
 exports.getUserIdFromUserMail = getUserIdFromUserMail;
@@ -121,3 +134,4 @@ exports.deleteUser = deleteUser;
 exports.updateUser = updateUser;
 exports.getUserRole = getUserRole;
 exports.getAllUser = getAllUser;
+exports.getAllUserByRole = getAllUserByRole;

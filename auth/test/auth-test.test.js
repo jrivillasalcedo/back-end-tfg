@@ -207,4 +207,96 @@ describe('Suite de pruebas auth', () => {
                     });
             });
     });
+
+    it('should return 200 and all the users registered (teacher -> student)', (done) => {
+        chai.request(app)
+            .post('/auth/register')
+            .set('content-type', 'application/json')
+            .send({userRole: 'teacher', userName:'testName', mail: 'userTest@mail.com', password: '1234', idNumber: '02721083E'})
+            .end((err, res) => {
+                chai.request(app)
+                    .post('/auth/login')
+                    .set('content-type', 'application/json')
+                    .send({mail: 'userTest@mail.com', password: '1234'})
+                    .end((err, res) => {
+                        let token = res.body.token;
+                        chai.request(app)
+                            .get('/auth/list/student')
+                            .set('Authorization', `JWT ${token}`)
+                            .end((err, res) => {
+                                chai.assert.equal(res.statusCode, 200);
+                                done();
+                            });
+                    });
+            });
+    });
+
+    it('should return 401 (teacher -> teacher)', (done) => {
+        chai.request(app)
+            .post('/auth/register')
+            .set('content-type', 'application/json')
+            .send({userRole: 'teacher', userName:'testName', mail: 'userTest@mail.com', password: '1234', idNumber: '02721083E'})
+            .end((err, res) => {
+                chai.request(app)
+                    .post('/auth/login')
+                    .set('content-type', 'application/json')
+                    .send({mail: 'userTest@mail.com', password: '1234'})
+                    .end((err, res) => {
+                        let token = res.body.token;
+                        chai.request(app)
+                            .get('/auth/list/teacher')
+                            .set('Authorization', `JWT ${token}`)
+                            .end((err, res) => {
+                                chai.assert.equal(res.statusCode, 401);
+                                done();
+                            });
+                    });
+            });
+    });
+
+    it('should return 401 (student -> any)', (done) => {
+        chai.request(app)
+            .post('/auth/register')
+            .set('content-type', 'application/json')
+            .send({userRole: 'student', userName:'testName', mail: 'userTest@mail.com', password: '1234', idNumber: '02721083E'})
+            .end((err, res) => {
+                chai.request(app)
+                    .post('/auth/login')
+                    .set('content-type', 'application/json')
+                    .send({mail: 'userTest@mail.com', password: '1234'})
+                    .end((err, res) => {
+                        let token = res.body.token;
+                        chai.request(app)
+                            .get('/auth/list/teacher')
+                            .set('Authorization', `JWT ${token}`)
+                            .end((err, res) => {
+                                chai.assert.equal(res.statusCode, 401);
+                                done();
+                            });
+                    });
+            });
+    });
+
+    it('should return 200 (admin -> any)', (done) => {
+        chai.request(app)
+            .post('/auth/register')
+            .set('content-type', 'application/json')
+            .send({userRole: 'admin', userName:'testName', mail: 'userTest@mail.com', password: '1234', idNumber: '02721083E'})
+            .end((err, res) => {
+                chai.request(app)
+                    .post('/auth/login')
+                    .set('content-type', 'application/json')
+                    .send({mail: 'userTest@mail.com', password: '1234'})
+                    .end((err, res) => {
+                        let token = res.body.token;
+                        chai.request(app)
+                            .get('/auth/list/teacher')
+                            .set('Authorization', `JWT ${token}`)
+                            .end((err, res) => {
+                                chai.assert.equal(res.statusCode, 200);
+                                done();
+                            });
+                    });
+            });
+    });
 });
