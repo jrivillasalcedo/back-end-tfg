@@ -15,11 +15,11 @@ afterEach(async () => {
     await usersController.cleanUpUsers();
 });
 
-describe('Suite de pruebas auth', () => {
+describe('Suite de pruebas users', () => {
 
     it('should return 400 when no data is provided', (done) => {
         chai.request(app)
-            .post('/auth/login')
+            .post('/users/login')
             .end((err, res) => {
                 //Expect valid login
                 chai.assert.equal(res.statusCode, 400);
@@ -29,7 +29,7 @@ describe('Suite de pruebas auth', () => {
 
     it('should return 200 and token for succesful login', (done) => {
         chai.request(app)
-            .post('/auth/login')
+            .post('/users/login')
             .set('content-type', 'application/json')
             .send({mail: 'bettatech@mail.com', password: '1234'})
             .end((err, res) => {
@@ -41,7 +41,7 @@ describe('Suite de pruebas auth', () => {
 
     it('should return 200 for a succesful register', (done) => {
         chai.request(app)
-            .post('/auth/register')
+            .post('/users/register')
             .set('content-type', 'application/json')
             .send({userRole: 'admin', userName:'testName', mail: 'userTest@mail.com', password: '1234', idNumber: '02721083E'})
             .end((err, res) => {
@@ -53,7 +53,7 @@ describe('Suite de pruebas auth', () => {
 
     it('should return 400 for a empty register', (done) => {
         chai.request(app)
-            .post('/auth/register')
+            .post('/users/register')
             .set('content-type', 'application/json')
             .send({})
             .end((err, res) => {
@@ -65,7 +65,7 @@ describe('Suite de pruebas auth', () => {
 
     it('should return 400 for a empty register field', (done) => {
         chai.request(app)
-            .post('/auth/register')
+            .post('/users/register')
             .set('content-type', 'application/json')
             .send({userRole: 'admin', userName:'testName', password: '1234', idNumber: '02721083E'})
             .end((err, res) => {
@@ -77,18 +77,18 @@ describe('Suite de pruebas auth', () => {
 
     it('should return 200 and the user with the user id in token', (done) => {
         chai.request(app)
-            .post('/auth/register')
+            .post('/users/register')
             .set('content-type', 'application/json')
             .send({userRole: 'admin', userName:'testName', mail: 'userTest@mail.com', password: '1234', idNumber: '02721083E'})
             .end((err, res) => {
                 chai.request(app)
-                    .post('/auth/login')
+                    .post('/users/login')
                     .set('content-type', 'application/json')
                     .send({mail: 'userTest@mail.com', password: '1234'})
                     .end((err, res) => {
                         let token = res.body.token;
                         chai.request(app)
-                            .get('/auth/list')
+                            .get('/users/list')
                             .set('Authorization', `JWT ${token}`)
                             .end((err, res) => {
                                 chai.assert.equal(res.statusCode, 200);
@@ -104,18 +104,18 @@ describe('Suite de pruebas auth', () => {
 
     it('should return 200 and delete user with the user id in token', (done) => {
         chai.request(app)
-            .post('/auth/register')
+            .post('/users/register')
             .set('content-type', 'application/json')
             .send({userRole: 'admin', userName:'testName', mail: 'userTest@mail.com', password: '1234', idNumber: '02721083E'})
             .end((err, res) => {
                 chai.request(app)
-                    .post('/auth/login')
+                    .post('/users/login')
                     .set('content-type', 'application/json')
                     .send({mail: 'userTest@mail.com', password: '1234'})
                     .end((err, res) => {
                         let token = res.body.token;
                         chai.request(app)
-                            .delete('/auth/delete')
+                            .delete('/users/delete')
                             .set('Authorization', `JWT ${token}`)
                             .end((err, res) => {
                                 chai.assert.equal(res.statusCode, 200);
@@ -129,23 +129,23 @@ describe('Suite de pruebas auth', () => {
     it('should return 200 and the user updated', (done) => {
         let user = {userRole: 'student', userName:'testNameUpdated', mail: 'userTestUpdated@mail.com', password: '12345', idNumber: '02721083J'};
         chai.request(app)
-            .post('/auth/register')
+            .post('/users/register')
             .set('content-type', 'application/json')
             .send({userRole: 'admin', userName:'testName', mail: 'userTest@mail.com', password: '1234', idNumber: '02721083E'})
             .end((err, res) => {
                 chai.request(app)
-                    .post('/auth/login')
+                    .post('/users/login')
                     .set('content-type', 'application/json')
                     .send({mail: 'userTest@mail.com', password: '1234'})
                     .end((err, res) => {
                         let token = res.body.token;
                         chai.request(app)
-                            .put('/auth/update')
+                            .put('/users/update')
                             .send({user: user})
                             .set('Authorization', `JWT ${token}`)
                             .end((err, res) => {
                                 chai.request(app)
-                                    .get('/auth/list')
+                                    .get('/users/list')
                                     .set('Authorization', `JWT ${token}`)
                                     .end((err, res) => {
                                         chai.assert.equal(res.statusCode, 200);
@@ -163,18 +163,18 @@ describe('Suite de pruebas auth', () => {
 
     it('should return 200 and all the users registered', (done) => {
         chai.request(app)
-            .post('/auth/register')
+            .post('/users/register')
             .set('content-type', 'application/json')
             .send({userRole: 'admin', userName:'testName', mail: 'userTest@mail.com', password: '1234', idNumber: '02721083E'})
             .end((err, res) => {
                 chai.request(app)
-                    .post('/auth/login')
+                    .post('/users/login')
                     .set('content-type', 'application/json')
                     .send({mail: 'userTest@mail.com', password: '1234'})
                     .end((err, res) => {
                         let token = res.body.token;
                         chai.request(app)
-                            .get('/auth/listAll')
+                            .get('/users/listAll')
                             .set('Authorization', `JWT ${token}`)
                             .end((err, res) => {
                                 chai.assert.equal(res.statusCode, 200);
@@ -187,18 +187,18 @@ describe('Suite de pruebas auth', () => {
 
     it('should return 401 you do not have permissions', (done) => {
         chai.request(app)
-            .post('/auth/register')
+            .post('/users/register')
             .set('content-type', 'application/json')
             .send({userRole: 'student', userName:'testName', mail: 'userTest@mail.com', password: '1234', idNumber: '02721083E'})
             .end((err, res) => {
                 chai.request(app)
-                    .post('/auth/login')
+                    .post('/users/login')
                     .set('content-type', 'application/json')
                     .send({mail: 'userTest@mail.com', password: '1234'})
                     .end((err, res) => {
                         let token = res.body.token;
                         chai.request(app)
-                            .get('/auth/listAll')
+                            .get('/users/listAll')
                             .set('Authorization', `JWT ${token}`)
                             .end((err, res) => {
                                 chai.assert.equal(res.statusCode, 401);
@@ -210,18 +210,18 @@ describe('Suite de pruebas auth', () => {
 
     it('should return 200 and all the users registered (teacher -> student)', (done) => {
         chai.request(app)
-            .post('/auth/register')
+            .post('/users/register')
             .set('content-type', 'application/json')
             .send({userRole: 'teacher', userName:'testName', mail: 'userTest@mail.com', password: '1234', idNumber: '02721083E'})
             .end((err, res) => {
                 chai.request(app)
-                    .post('/auth/login')
+                    .post('/users/login')
                     .set('content-type', 'application/json')
                     .send({mail: 'userTest@mail.com', password: '1234'})
                     .end((err, res) => {
                         let token = res.body.token;
                         chai.request(app)
-                            .get('/auth/list/student')
+                            .get('/users/list/student')
                             .set('Authorization', `JWT ${token}`)
                             .end((err, res) => {
                                 chai.assert.equal(res.statusCode, 200);
@@ -233,18 +233,18 @@ describe('Suite de pruebas auth', () => {
 
     it('should return 401 (teacher -> teacher)', (done) => {
         chai.request(app)
-            .post('/auth/register')
+            .post('/users/register')
             .set('content-type', 'application/json')
             .send({userRole: 'teacher', userName:'testName', mail: 'userTest@mail.com', password: '1234', idNumber: '02721083E'})
             .end((err, res) => {
                 chai.request(app)
-                    .post('/auth/login')
+                    .post('/users/login')
                     .set('content-type', 'application/json')
                     .send({mail: 'userTest@mail.com', password: '1234'})
                     .end((err, res) => {
                         let token = res.body.token;
                         chai.request(app)
-                            .get('/auth/list/teacher')
+                            .get('/users/list/teacher')
                             .set('Authorization', `JWT ${token}`)
                             .end((err, res) => {
                                 chai.assert.equal(res.statusCode, 401);
@@ -256,18 +256,18 @@ describe('Suite de pruebas auth', () => {
 
     it('should return 401 (student -> any)', (done) => {
         chai.request(app)
-            .post('/auth/register')
+            .post('/users/register')
             .set('content-type', 'application/json')
             .send({userRole: 'student', userName:'testName', mail: 'userTest@mail.com', password: '1234', idNumber: '02721083E'})
             .end((err, res) => {
                 chai.request(app)
-                    .post('/auth/login')
+                    .post('/users/login')
                     .set('content-type', 'application/json')
                     .send({mail: 'userTest@mail.com', password: '1234'})
                     .end((err, res) => {
                         let token = res.body.token;
                         chai.request(app)
-                            .get('/auth/list/teacher')
+                            .get('/users/list/teacher')
                             .set('Authorization', `JWT ${token}`)
                             .end((err, res) => {
                                 chai.assert.equal(res.statusCode, 401);
@@ -279,18 +279,18 @@ describe('Suite de pruebas auth', () => {
 
     it('should return 200 (admin -> any)', (done) => {
         chai.request(app)
-            .post('/auth/register')
+            .post('/users/register')
             .set('content-type', 'application/json')
             .send({userRole: 'admin', userName:'testName', mail: 'userTest@mail.com', password: '1234', idNumber: '02721083E'})
             .end((err, res) => {
                 chai.request(app)
-                    .post('/auth/login')
+                    .post('/users/login')
                     .set('content-type', 'application/json')
                     .send({mail: 'userTest@mail.com', password: '1234'})
                     .end((err, res) => {
                         let token = res.body.token;
                         chai.request(app)
-                            .get('/auth/list/teacher')
+                            .get('/users/list/teacher')
                             .set('Authorization', `JWT ${token}`)
                             .end((err, res) => {
                                 chai.assert.equal(res.statusCode, 200);
